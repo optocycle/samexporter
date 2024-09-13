@@ -72,6 +72,13 @@ parser.add_argument(
     ),
 )
 
+parser.add_argument(
+    "--export-traced",
+    action="store_true",
+    help=(
+        "If set, will export the model as a traced model instead of a onnx model."
+    )
+)
 
 def run_export(
     model_type: str,
@@ -80,6 +87,7 @@ def run_export(
     use_preprocess: bool,
     opset: int,
     gelu_approximate: bool = False,
+    export_traced: bool = False,
 ):
     print("Loading model...")
     if model_type == "mobile":
@@ -124,48 +132,18 @@ def run_export(
     output_names = ["image_embeddings"]
 
     onnx_base = os.path.splitext(os.path.basename(output))[0]
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=torch.jit.TracerWarning)
-        warnings.filterwarnings("ignore", category=UserWarning)
-        print(f"Exporting onnx model to {output}...")
-        if model_type == "vit_h":
-            tmp_dir = mkdtemp()
-            tmp_model_path = os.path.join(tmp_dir, f"{onnx_base}.onnx")
-            torch.onnx.export(
-                onnx_model,
-                tuple(dummy_input.values()),
-                tmp_model_path,
-                export_params=True,
-                verbose=False,
-                opset_version=opset,
-                do_constant_folding=True,
-                input_names=list(dummy_input.keys()),
-                output_names=output_names,
-                dynamic_axes=dynamic_axes,
-            )
-
-            # Combine the weights into a single file
-            pathlib.Path(output).parent.mkdir(parents=True, exist_ok=True)
-            onnx_model = onnx.load(tmp_model_path)
-            convert_model_to_external_data(
-                onnx_model,
-                all_tensors_to_one_file=True,
-                location=f"{onnx_base}_data.bin",
-                size_threshold=1024,
-                convert_attribute=False,
-            )
-
-            # Save the model
-            onnx.save(onnx_model, output)
-
-            # Cleanup the temporary directory
-            shutil.rmtree(tmp_dir)
-        else:
-            with open(output, "wb") as f:
+    if not export_traced:
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=torch.jit.TracerWarning)
+            warnings.filterwarnings("ignore", category=UserWarning)
+            print(f"Exporting onnx model to {output}...")
+            if model_type == "vit_h":
+                tmp_dir = mkdtemp()
+                tmp_model_path = os.path.join(tmp_dir, f"{onnx_base}.onnx")
                 torch.onnx.export(
                     onnx_model,
                     tuple(dummy_input.values()),
-                    f,
+                    tmp_model_path,
                     export_params=True,
                     verbose=False,
                     opset_version=opset,
@@ -174,6 +152,40 @@ def run_export(
                     output_names=output_names,
                     dynamic_axes=dynamic_axes,
                 )
+
+                # Combine the weights into a single file
+                pathlib.Path(output).parent.mkdir(parents=True, exist_ok=True)
+                onnx_model = onnx.load(tmp_model_path)
+                convert_model_to_external_data(
+                    onnx_model,
+                    all_tensors_to_one_file=True,
+                    location=f"{onnx_base}_data.bin",
+                    size_threshold=1024,
+                    convert_attribute=False,
+                )
+
+                # Save the model
+                onnx.save(onnx_model, output)
+
+                # Cleanup the temporary directory
+                shutil.rmtree(tmp_dir)
+            else:
+                with open(output, "wb") as f:
+                    torch.onnx.export(
+                        onnx_model,
+                        tuple(dummy_input.values()),
+                        f,
+                        export_params=True,
+                        verbose=False,
+                        opset_version=opset,
+                        do_constant_folding=True,
+                        input_names=list(dummy_input.keys()),
+                        output_names=output_names,
+                        dynamic_axes=dynamic_axes,
+                    )
+    else:
+        traced_model = torch.jit.trace(onnx_model, tuple(dummy_input.values()))
+        traced_model.save(output)
 
 
 def to_numpy(tensor):
@@ -189,6 +201,7 @@ if __name__ == "__main__":
         use_preprocess=args.use_preprocess,
         opset=args.opset,
         gelu_approximate=args.gelu_approximate,
+        export_traced=args.export_traced,
     )
 
     if args.quantize_out is not None:
