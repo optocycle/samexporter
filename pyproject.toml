@@ -21,10 +21,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "samexporter"
-version = "0.4.1"
+version = "0.4.2"
 description = "Exporting Segment Anything models ONNX format"
 authors = [
     {name = "Viet Anh Nguyen", email = "vietanh.dev@gmail.com"},
+    {name = "Jovan Cicvaric | Optocycle GmbH", email = "j.cicvaric@optocycle.com"},
 ]
 readme = "README.md"
 requires-python = ">=3.10"
