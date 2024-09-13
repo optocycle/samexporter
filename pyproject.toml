@@ -1,61 +1,25 @@
-[tool.black]
-line-length = 79
-#include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
+[tool.poetry]
+name = "samexporter"
+version = "0.1.0"
+description = ""
+authors = ["cile98 <jovan.cicvaric@yahoo.com>", "Viet Anh Nguyen <vietanh.dev@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+onnx = "^1.16.0"
+onnxruntime = "^1.18.0"
+opencv-python = "^4.7.0.72"
+torch = "^2.3.1"
+torchvision = "^0.18.1"
+timm = "^1.0.9"
+onnxsim = "^0.4.36"
+segment-anything = "^1.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.8.0"
+ruff = "^0.6.4"
 
 [build-system]
-requires = ["setuptools", "wheel", "build"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "samexporter"
-version = "0.4.2"
-description = "Exporting Segment Anything models ONNX format"
-authors = [
-    {name = "Viet Anh Nguyen", email = "vietanh.dev@gmail.com"},
-    {name = "Jovan Cicvaric | Optocycle GmbH", email = "j.cicvaric@optocycle.com"},
-]
-readme = "README.md"
-requires-python = ">=3.10"
-license = {file = "LICENSE"}
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
-
-dependencies = [
-    "onnx=^1.16.0",
-    "onnxruntime=^1.18.0",
-    "opencv-python=^4.7.0.72",
-    "segment-anything==1.0",
-    "torch==2.4.0",
-    "torchvision",
-    "timm",
-    "onnxsim=^0.4.36",
-]
-
-[project.urls]
-"Homepage" = "https://github.com/vietanhdev/samexporter"
-"Bug Tracker" = "https://github.com/vietanhdev/samexporter/issues"
-
-[project.optional-dependencies]
-dev = ["flake8", "isort", "black", "pre-commit"]
-
-[tool.setuptools]
-packages = ["samexporter"]
-
-[tool.setuptools.package-data]
-"samexporter.sam2_configs" = ["*.py", "*.yaml"]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
