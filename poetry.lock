@@ -1350,13 +1350,13 @@ files = [
 
 [[package]]
 name = "timm"
-version = "1.0.9"
+version = "0.9.16"
 description = "PyTorch Image Models"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "timm-1.0.9-py3-none-any.whl", hash = "sha256:ce5a4bac57a6cbb2be4ee35dc4ce689eede10d647e48dd1836106e2cc199693b"},
-    {file = "timm-1.0.9.tar.gz", hash = "sha256:69523aa2c34820cc6db37005302b5e42ddd60c30f476643f133ead4a8c5b5533"},
+    {file = "timm-0.9.16-py3-none-any.whl", hash = "sha256:bf5704014476ab011589d3c14172ee4c901fd18f9110a928019cac5be2945914"},
+    {file = "timm-0.9.16.tar.gz", hash = "sha256:891e54f375d55adf31a71ab0c117761f0e472f9f3971858ecdd1e7376b7071e6"},
 ]
 
 [package.dependencies]
@@ -1542,4 +1542,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2fe37ca07d4af4ca49f560055a3831777e9f79316587026818677fb7a2a5ca25"
+content-hash = "0c46bf3f0cc0c141c53a400dcd8c9c21dc9fde01f0b9cdb7d5d9c9a8ec850bcc"
